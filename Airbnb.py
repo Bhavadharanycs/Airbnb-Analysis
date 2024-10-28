@@ -54,4 +54,30 @@ def plot_price_analysis(df):
 def main():
     st.title("Airbnb Data Analysis")
 
-   
+    # MongoDB connection details
+    uri = st.secrets["mongo_uri"]
+    db_name = "airbnb_db"
+    collection_name = "listings"
+
+    # Fetch and clean data
+    collection = connect_to_mongo(uri, db_name, collection_name)
+    df = fetch_data(collection)
+    df = clean_data(df)
+
+    # Sidebar filters
+    st.sidebar.title("Filters")
+    room_type = st.sidebar.multiselect("Room Type", options=df['room_type'].unique(), default=df['room_type'].unique())
+    df_filtered = df[df['room_type'].isin(room_type)]
+
+    # Display interactive map
+    st.header("Geospatial Distribution of Listings")
+    plot_map(df_filtered)
+
+    # Price Analysis
+    st.header("Price Analysis")
+    plot_price_analysis(df_filtered)
+
+    # Further charts/visualizations can be added here (e.g., seasonal availability, location-based insights)
+    
+if __name__ == "__main__":
+    main()
