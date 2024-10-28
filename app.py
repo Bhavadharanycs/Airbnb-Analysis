@@ -2,68 +2,53 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Load the Airbnb dataset
+# Load and clean data
 @st.cache
 def load_data():
-    file_path = 'airbnb.csv'
+    file_path = 'airbnb.csv' 
     df = pd.read_csv(file_path)
     
-    # Basic cleaning
-    df.drop_duplicates(inplace=True)
-    df.dropna(subset=['latitude', 'longitude', 'price'], inplace=True)  # Drop rows missing essential data
-    df['price'] = pd.to_numeric(df['price'], errors='coerce')  # Convert price to numeric
-    df['price'] = df['price'].fillna(df['price'].median())  # Fill missing prices with median
-    df['availability_365'] = pd.to_numeric(df['availability_365'], errors='coerce')  # Ensure availability is numeric
+    # Convert price columns to numeric
+    df['Price(in dollar)'] = pd.to_numeric(df['Price(in dollar)'], errors='coerce')
+    df['Offer price(in dollar)'] = pd.to_numeric(df['Offer price(in dollar)'], errors='coerce')
+
+    # Clean 'Review and rating' column by extracting rating
+    df['Rating'] = df['Review and rating'].str.extract(r'(\d+\.\d+)').astype(float)
+    
+    # Extract number of beds as integer
+    df['Number of bed'] = df['Number of bed'].str.extract(r'(\d+)').astype(float)
+    
     return df
 
-# Load and display data
+# Load data
 df = load_data()
 
 # Streamlit sidebar filters
 st.sidebar.header("Filters")
-location = st.sidebar.multiselect("Select Neighborhood", options=df['neighborhood'].unique())
-property_type = st.sidebar.multiselect("Select Property Type", options=df['property_type'].unique())
-price_range = st.sidebar.slider("Price Range", min_value=int(df['price'].min()), max_value=int(df['price'].max()), value=(50, 300))
+price_range = st.sidebar.slider("Price Range", min_value=int(df['Price(in dollar)'].min()), max_value=int(df['Price(in dollar)'].max()), value=(50, 500))
+rating = st.sidebar.slider("Minimum Rating", min_value=0.0, max_value=5.0, value=4.0, step=0.1)
 
-# Filter data based on sidebar inputs
-filtered_data = df.copy()
-if location:
-    filtered_data = filtered_data[filtered_data['neighborhood'].isin(location)]
-if property_type:
-    filtered_data = filtered_data[filtered_data['property_type'].isin(property_type)]
-filtered_data = filtered_data[(filtered_data['price'] >= price_range[0]) & (filtered_data['price'] <= price_range[1])]
+# Filter data based on selections
+filtered_data = df[(df['Price(in dollar)'] >= price_range[0]) & (df['Price(in dollar)'] <= price_range[1]) & (df['Rating'] >= rating)]
 
-# Main app title and description
+# Main app
 st.title("Airbnb Data Analysis")
-st.write("Explore Airbnb listings, analyze prices, and check availability patterns.")
+st.write("Explore Airbnb listings with prices, ratings, and details.")
 
-# Show basic data summary
+# Display data summary
 st.write("### Data Summary")
 st.write(filtered_data.describe())
 
-# Map Visualization
-st.write("### Map of Airbnb Listings")
-fig = px.scatter_mapbox(
-    filtered_data,
-    lat='latitude',
-    lon='longitude',
-    color='price',
-    size='availability_365',
-    color_continuous_scale='Viridis',
-    size_max=10,
-    zoom=10,
-    mapbox_style="carto-positron",
-    hover_name='neighborhood',
-    hover_data={'price': True, 'property_type': True, 'availability_365': True}
-)
-st.plotly_chart(fig)
-
-# Price Analysis
-st.write("### Price Distribution by Neighborhood")
-fig_price = px.box(filtered_data, x="neighborhood", y="price", color="neighborhood")
+# Price Distribution
+st.write("### Price Distribution")
+fig_price = px.histogram(filtered_data, x="Price(in dollar)", nbins=30, title="Price Distribution")
 st.plotly_chart(fig_price)
 
-# Availability Patterns
-st.write("### Availability Distribution")
-fig_availability = px.histogram(filtered_data, x="availability_365", nbins=30)
-st.plotly_chart(fig_availability)
+# Ratings Analysis
+st.write("### Ratings by Property")
+fig_rating = px.histogram(filtered_data, x="Rating", nbins=20, title="Ratings Distribution")
+st.plotly_chart(fig_rating)
+
+# Show table of filtered results
+st.write("### Filtered Listings")
+st.dataframe(filtered_data[['Title', 'Price(in dollar)', 'Offer price(in dollar)', 'Rating', 'Number of bed']])
