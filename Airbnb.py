@@ -5,6 +5,22 @@ import plotly.express as px
 import geopandas as gpd
 from streamlit_folium import folium_static
 import folium
+import streamlit as st
+from pymongo import MongoClient
+
+def connect_to_mongo():
+    # Check available secrets
+    st.write(st.secrets)
+    
+    # Access MongoDB connection URI
+    uri = st.secrets["mongo_uri"]["uri"]
+    client = MongoClient(uri)
+    return client["dbname"]["collection_name"]  # Replace with actual database and collection
+
+# Use the connection in your app
+collection = connect_to_mongo()
+st.write("Connected to MongoDB!")
+
 
 # MongoDB connection
 def connect_to_mongo(uri, db_name, collection_name):
