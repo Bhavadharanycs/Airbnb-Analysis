@@ -81,3 +81,4 @@ def main():
     
 if __name__ == "__main__":
     main()
+uri = st.secrets["mongo_uri"]["uri"]
