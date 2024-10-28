@@ -9,7 +9,6 @@ import streamlit as st
 from pymongo import MongoClient
 
 def connect_to_mongo():
-    uri = st.secrets["mongo_uri"]["uri"]
     # Check available secrets
     st.write(st.secrets)
     
