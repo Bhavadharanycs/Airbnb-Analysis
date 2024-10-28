@@ -8,6 +8,8 @@ import folium
 import streamlit as st
 from pymongo import MongoClient
 
+uri = st.secrets["mongo_uri"]["uri"]
+
 def connect_to_mongo():
     # Check available secrets
     st.write(st.secrets)
@@ -97,4 +99,4 @@ def main():
     
 if __name__ == "__main__":
     main()
-uri = st.secrets["mongo_uri"]["uri"]
+
