@@ -5,7 +5,7 @@ import plotly.express as px
 # Load the Airbnb dataset
 @st.cache
 def load_data():
-    file_path = '/mnt/data/airbnb.csv'
+    file_path = 'airbnb.csv'
     df = pd.read_csv(file_path)
     
     # Basic cleaning
