@@ -15,7 +15,7 @@ def connect_to_mongo():
     # Access MongoDB connection URI
     uri = st.secrets["mongo_uri"]["uri"]
     client = MongoClient(uri)
-    return client["dbname"]["collection_name"]  # Replace with actual database and collection
+    return client["airbnb_db"]["listings"]  
 
 # Use the connection in your app
 collection = connect_to_mongo()
