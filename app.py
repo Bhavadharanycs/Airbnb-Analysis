@@ -7,7 +7,7 @@ def add_bg_image():
         """
         <style>
         .stApp {
-            background-image: url('https://images.unsplash.com/photo-1589419896452-b460b8b390a3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZsXMOhp9z-A4-lOUBs4StVNKehZoiixPFbA&s');
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
