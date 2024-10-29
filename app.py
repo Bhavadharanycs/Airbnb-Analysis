@@ -19,6 +19,7 @@ def add_bg_image():
 
 # Call the function to add the background image
 add_bg_image()
+
 # Load and clean data
 @st.cache
 def load_data():
@@ -69,3 +70,17 @@ st.plotly_chart(fig_rating)
 # Show table of filtered results
 st.write("### Filtered Listings")
 st.dataframe(filtered_data[['Title', 'Price(in dollar)', 'Offer price(in dollar)', 'Rating', 'Number of bed']])
+
+# Add an option to download the filtered data as a CSV for Power BI or Tableau
+@st.cache
+def convert_df_to_csv(df):
+    return df.to_csv(index=False).encode('utf-8')
+
+csv_data = convert_df_to_csv(filtered_data)
+
+st.download_button(
+    label="Download filtered data as CSV for Power BI / Tableau",
+    data=csv_data,
+    file_name='filtered_airbnb_data.csv',
+    mime='text/csv',
+)
